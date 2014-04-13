@@ -13,5 +13,8 @@
   "license": "CC0",
   "dependencies": {
     "mori": "~0.2.6"
+  },
+  "devDependencies": {
+    "node-inspector": "~0.7.3"
   }
 }

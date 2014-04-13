@@ -33,7 +33,5 @@ exports.schedule = function( allTeams, rounds ) {
 		
 		teams = newTeams;
 	};
-	
-	console.log( 'schedule', schedule );
 	return schedule;
 };
