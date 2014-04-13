@@ -1,0 +1,17 @@
+{
+  "name": "nba-ttp",
+  "version": "0.0.0",
+  "description": "Finding a round-robin schedule for the NBA with a genetic algorithm.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "nba"
+  ],
+  "author": "Nikolaus Piccolotto",
+  "license": "CC0",
+  "dependencies": {
+    "mori": "~0.2.6"
+  }
+}
