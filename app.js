@@ -13,7 +13,6 @@ function fitness( genome ) {
 	// first generate the schedule
 	var schedule = scheduler.schedule( genome );
 
-	// [ BOS, MIA ]
 	// containsTeam 'BOS' [ BOS, MIA ] => true
 	function containsTeam( team ) {
 		return function( pairing ) {
@@ -25,18 +24,22 @@ function fitness( genome ) {
 		return m.nth( pairing, 0 );
 	}
 
-	function getPlacesFor( team ) {
-		return function( schedule ) {
-			return m.partition( 2, 1, m.flatten( m.map( function( gd ) {
-				return m.map( getHomeTeam, m.filter( containsTeam( team ), gd ) );
-			}, schedule ) ) );
-		};
+	// returns [ [ atl, bos ], [ bos, phi ], [ phi, atl ], [ atl, atl ] ...]
+	function getRouteFor( team, schedule ) {
+		return m.partition( 2, 1, m.flatten( m.map( function( gd ) {
+			return m.map( getHomeTeam, m.filter( containsTeam( team ), gd ) );
+		}, schedule ) ) );
 	}
-
-	// [ bos, phi, atl, atl, atl, nyk, atl ]
-	return m.reduce( function( fitness, travel ) {
-		return fitness += distance.between( m.nth( travel, 0 ), m.nth( travel, 1 ) );
-	}, 0, getPlacesFor( 'ATL' )(schedule) );
+	
+	var overallFitness = 0;
+	m.each( genome, function( team ) {
+		 overallFitness += m.reduce( function( fitness, travel ) {
+		 	var start = m.nth( travel, 0 ),
+		 		end = m.nth( travel, 1 );
+			return fitness += distance.between( start, end );
+		}, 0, getRouteFor( team, schedule ) );	
+	});
+	return overallFitness;
 };
 
 function select( genomes ) {
@@ -44,11 +47,26 @@ function select( genomes ) {
 	return 0;
 };
 
-function crossover( a, b ) {
-	var start = util.random( a.length - 1 ),
-		end = util.random( a.lenght - 1 );
+function makeBaby( a, b ) {
+	var size = m.count( a ),
+		start = util.random( size - 1 ),
+		end = util.random( size - 1 );
+	// switch them to be in order
+	if ( start > end ) {
+		var tmp = start;
+		start = end;
+		end = tmp;
+	}
 
-	// now here object comparison gets relevant, install mori
+	var offspring = m.into( m.vector(), m.subvec( b, 0, start ) );
+	offspring = m.into( offspring, m.subvec( a, start, end ) );
+	offspring = m.into( offspring, m.subvec( b, end ) );
+	return offspring;
 }
 
-console.log( fitness( teams.all() ) );
+function crossover( parentA, parentB ) {
+	var offspringA = makeBaby( parentA, parentB ),
+		offspringB = makeBaby( parentB, parentA );
+}
+
+console.log( crossover( teams.all(), m.into( m.vector(), m.reverse( teams.all() ) )  ) );
