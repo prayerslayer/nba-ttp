@@ -113,7 +113,7 @@ exports.run = function run( config ) {
             throw new Error( 'You must specify seeds or a function to create one.' );
         }
         // seed
-        population = m.map( makeSeedFn, m.range( 1, config.population ) );
+        population = m.map( makeSeedFn, m.range( config.population ) );
     } else {
         population = initialSeeds;
     }
