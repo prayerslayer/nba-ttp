@@ -31,8 +31,8 @@ function findMaximum( acc, next ) {
 }
 
 function crossover( parents ) {
-    var parentA = m.nth( parents, 0 ),
-        parentB = m.nth( parents, 1 ),
+    var parentA = m.first( parents ),
+        parentB = m.last( parents ),
         offspringA = Math.random() < params.crossoverProbability ? makeBabyFn( parentA, parentB ) : parentA,
         offspringB = Math.random() < params.crossoverProbability ? makeBabyFn( parentB, parentA ) : parentB;
     return m.vector( offspringA, offspringB );
@@ -117,14 +117,15 @@ exports.run = function run( config ) {
     } else {
         population = initialSeeds;
     }
+
+    // run algo
     var start = Date.now(),
         births,
         chosenOnes = m.vector(),
         parents,
-        offsprings,
-        killingSum = 0,
-        parentSum = 0;
-    for( var i = 0; i < config.generations; i++ ) {
+        offsprings;
+
+    m.each( m.range( config.generations ), function( i ) {
         console.log( 'Current generation is ', i, ' with population ', m.count( population ) );
         // calculate how many children we need
         births = m.count( population ) * config.generationGap;
@@ -146,8 +147,9 @@ exports.run = function run( config ) {
             // kill worst 10 % of population
             population = m.take( config.population, m.reverse( m.sort_by( fitnessFn, population ) ) );
         }
-    }
+    });
+
     var end = Date.now();
     console.log( 'Simulation ran for', end - start, 'ms.' );
-    return m.nth( population, 0 );
+    return m.first( population );
 };
